@@ -4,6 +4,7 @@ const fetch = require('node-fetch');
 var api = "https://mentor.duden.de/api/grammarcheck?_format=json";
 
 var collections = [];
+var errors = [];
 
 async function spellCheck(text) {
     return new Promise((resolve, reject) => {
@@ -33,19 +34,12 @@ const errorDecorationType = vscode.window.createTextEditorDecorationType({
     backgroundColor: { id: 'duden.error' }
 });
 
-function highlightErrors(spellAdvices) {
-    // clear first
-    collections.forEach(collection => {
-        collection.clear();
-    });
-
+function highlightErrors(spellAdvices, selection) {
     if (spellAdvices == null || spellAdvices.length <= 0) {
         vscode.window.showInformationMessage("No errors");
     }
 
     let activeEditor = vscode.window.activeTextEditor;
-
-    let errors = [];
 
     spellAdvices.forEach(sa => {
         // get spelladvice values
@@ -65,12 +59,13 @@ function highlightErrors(spellAdvices) {
         // fixMessage += " => Error: { " + errorMessage + " }";
 
         // selection offset
-        let startPos = new vscode.Position(activeEditor.selection.start.line, activeEditor.selection.start.character + offset);
-        let endPos = new vscode.Position(activeEditor.selection.start.line, activeEditor.selection.start.character + offset + length);
+        let startPos = new vscode.Position(selection.start.line, selection.start.character + offset);
+        let endPos = new vscode.Position(selection.start.line, selection.start.character + offset + length);
 
         // decorations
         let decoration = { range: new vscode.Range(startPos, endPos), hoverMessage: shortMessage };
         errors.push(decoration);
+        activeEditor.setDecorations(errorDecorationType, errors);
 
         // vscode.window.showInformationMessage(fixMessage);
 
@@ -78,7 +73,6 @@ function highlightErrors(spellAdvices) {
         showDiagnostics(document, new vscode.Range(startPos, endPos), sa);
     });
 
-    activeEditor.setDecorations(errorDecorationType, errors);
 }
 
 function showDiagnostics(document, range, spellAdvice) {
@@ -101,7 +95,18 @@ function showDiagnostics(document, range, spellAdvice) {
     }]);
 }
 
+function reset(){
+    // clear first
+    collections.forEach(collection => {
+        collection.clear();
+    });
+
+    errors = [];
+    vscode.window.activeTextEditor.setDecorations(errorDecorationType, errors);
+}
+
 module.exports = {
+    reset,
     spellCheck,
     highlightErrors,
     showDiagnostics

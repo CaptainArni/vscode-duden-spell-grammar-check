@@ -21,34 +21,37 @@ function activate(context) {
 	// The commandId parameter must match the command field in package.json
 	let disposable = vscode.commands.registerCommand('duden-spell-grammar-check.checkSpelling', function () {
 		// The code you place here will be executed every time your command is executed	
-		const editor = vscode.window.activeTextEditor;	
+		const editor = vscode.window.activeTextEditor;
 
 		if (editor) {
 			const document = editor.document;
-			const selection = editor.selection;
+			// const selection = editor.selection;
+
+			const selections = editor.selections;
 
 			// Get the text within the selection
-			let text = document.getText(selection);
+			// let text = document.getText(selection);
 
 			// replace line endings => convert to single line
-			if(!selection.isSingleLine){
-				text = text.replace(/(\r\n|\n|\r)/gm, " ");
-				editor.edit(editBuilder => {
-					editBuilder.replace(selection, text);
+			// if(!selection.isSingleLine){
+			// 	text = text.replace(/(\r\n|\n|\r)/gm, " ");
+			// 	editor.edit(editBuilder => {
+			// 		editBuilder.replace(selection, text);
+			// 	});
+			// }
+
+			duden.reset();
+
+			selections.forEach(selection => {
+				let text = document.getText(selection);
+
+				duden.spellCheck(text).then(function (spellAdvices) {
+					console.log(spellAdvices);
+
+					duden.highlightErrors(spellAdvices, selection);
 				});
-			}
-
-			// spell check then highlight errors
-			duden.spellCheck(text).then(function(spellAdvices){
-				console.log(spellAdvices);
-
-				duden.highlightErrors(spellAdvices);
 			});
-
 		}
-
-		// Display a message box to the user
-		// vscode.window.showInformationMessage('Hello World from Duden Spell&amp;Grammar Check!');
 	});
 
 	context.subscriptions.push(disposable);
