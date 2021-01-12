@@ -11,4 +11,5 @@ This extension is used to check for spelling and grammar mistakes for text in th
 This extension contributes the following commands to the Command palette.
 
 - `Duden Spell&Grammar Check` : Check for spelling and grammar mistakes in the highlighted text and highlight them in the editor.
-![Preview](./assets/duden.gif)
+
+![Preview](https://raw.githubusercontent.com/CaptainArni/vscode-duden-spell-grammar-check/main/assets/duden.gif)
