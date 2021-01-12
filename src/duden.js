@@ -34,43 +34,53 @@ const errorDecorationType = vscode.window.createTextEditorDecorationType({
     backgroundColor: { id: 'duden.error' }
 });
 
-function highlightErrors(spellAdvices, selection) {
+function highlightErrors(text, spellAdvices, selection) {
     if (spellAdvices == null || spellAdvices.length <= 0) {
         vscode.window.showInformationMessage("No errors");
     }
 
+    // line breaks => for offset calculation
+    var indices = [];
+    for (var i = 0; i < text.length; i++) {
+        if (text[i] === "\n") indices.push(i);
+    }
+
     let activeEditor = vscode.window.activeTextEditor;
 
-    spellAdvices.forEach(sa => {
+    spellAdvices.forEach(spellAdvice => {
         // get spelladvice values
-        let errorMessage = sa.errorMessage;
-        let shortMessage = sa.shortMessage;
-        let length = sa.length;
-        let offset = sa.offset;
-        let originalError = sa.originalError;
-        let proposals = sa.proposals;
+        let errorMessage = spellAdvice.errorMessage;
+        let shortMessage = spellAdvice.shortMessage;
+        let length = spellAdvice.length;
+        let offset = spellAdvice.offset;
+        let originalError = spellAdvice.originalError;
+        let proposals = spellAdvice.proposals;
 
-        // Information Message
-        // let fixMessage = "Wrong: { " + originalError + " } => Fix: ";
-        // proposals.forEach(proposal => {
-        //     fixMessage += "[ " + proposal + " ], ";
-        // });
-        // fixMessage = fixMessage.slice(0, -2);
-        // fixMessage += " => Error: { " + errorMessage + " }";
+        // calculate offset for line and character
+        let lineOffset = 0;
+        let charOffset = offset;
+
+        indices.forEach(index => {
+            if (offset > index) {
+                lineOffset++;
+                charOffset = offset - index - 1;
+            }
+        });
+
+        // console.log(offset + "<->L:" + lineOffset + "<->C:" + charOffset);
 
         // selection offset
-        let startPos = new vscode.Position(selection.start.line, selection.start.character + offset);
-        let endPos = new vscode.Position(selection.start.line, selection.start.character + offset + length);
+        let startPos = new vscode.Position(selection.start.line + lineOffset, selection.start.character + charOffset);
+        let endPos = new vscode.Position(selection.start.line + lineOffset, selection.start.character + charOffset + length);
 
         // decorations
         let decoration = { range: new vscode.Range(startPos, endPos), hoverMessage: shortMessage };
         errors.push(decoration);
         activeEditor.setDecorations(errorDecorationType, errors);
 
-        // vscode.window.showInformationMessage(fixMessage);
-
+        // display diagnostics with fixes
         let document = vscode.window.activeTextEditor.document;
-        showDiagnostics(document, new vscode.Range(startPos, endPos), sa);
+        showDiagnostics(document, new vscode.Range(startPos, endPos), spellAdvice);
     });
 
 }
@@ -95,7 +105,7 @@ function showDiagnostics(document, range, spellAdvice) {
     }]);
 }
 
-function reset(){
+function reset() {
     // clear first
     collections.forEach(collection => {
         collection.clear();

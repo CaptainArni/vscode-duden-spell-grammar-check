@@ -48,7 +48,7 @@ function activate(context) {
 				duden.spellCheck(text).then(function (spellAdvices) {
 					console.log(spellAdvices);
 
-					duden.highlightErrors(spellAdvices, selection);
+					duden.highlightErrors(text, spellAdvices, selection);
 				});
 			});
 		}
