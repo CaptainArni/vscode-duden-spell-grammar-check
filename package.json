@@ -2,6 +2,13 @@
 	"name": "duden-spell-grammar-check",
 	"displayName": "Duden Spell&Grammar Check",
 	"description": "Extension to check for spelling and grammar mistakes (german language)",
+	"keywords": [
+        "duden",
+        "spell",
+        "spelling",
+        "grammar",
+        "mistakes"
+    ],
 	"version": "0.0.4",
 	"repository": {
 		"type": "git",
