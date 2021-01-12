@@ -7,7 +7,7 @@
 		"type": "git",
 		"url": "https://github.com/CaptainArni/vscode-duden-spell-grammar-check"
 	},
-	"icon": "https://raw.githubusercontent.com/CaptainArni/vscode-duden-spell-grammar-check/main/assets/duden.png",
+	"icon": "assets/duden.png",
 	"engines": {
 		"vscode": "^1.52.0"
 	},
