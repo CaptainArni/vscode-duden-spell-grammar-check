@@ -1,6 +1,10 @@
 # Duden Spell&Grammar Check
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT) [![Version](https://vsmarketplacebadge.apphb.com/version-short/Captain-Arni.duden-spell-grammar-check.svg)](https://travis-ci.org/wayou/vscode-todo-highlight) [![Downloads](https://vsmarketplacebadge.apphb.com/downloads/Captain-Arni.duden-spell-grammar-check.svg)](https://marketplace.visualstudio.com/items?itemName=wayou.vscode-todo-highlight) [![Installs](https://vsmarketplacebadge.apphb.com/installs/Captain-Arni.duden-spell-grammar-check.svg)](https://marketplace.visualstudio.com/items?itemName=wayou.vscode-todo-highlight) [![Ratings](https://vsmarketplacebadge.apphb.com/rating-short/Captain-Arni.duden-spell-grammar-check.svg)](https://marketplace.visualstudio.com/items?itemName=wayou.vscode-todo-highlight)
+[![License: MIT](https://img.shields.io/badge/License-MIT-brightgreen.svg)](https://opensource.org/licenses/MIT)
+[![Version](https://vsmarketplacebadge.apphb.com/version-short/Captain-Arni.duden-spell-grammar-check.svg)](https://github.com/CaptainArni/vscode-duden-spell-grammar-check)
+[![Downloads](https://vsmarketplacebadge.apphb.com/downloads/Captain-Arni.duden-spell-grammar-check.svg)](https://github.com/CaptainArni/vscode-duden-spell-grammar-check)
+[![Installs](https://vsmarketplacebadge.apphb.com/installs/Captain-Arni.duden-spell-grammar-check.svg)](https://github.com/CaptainArni/vscode-duden-spell-grammar-check)
+[![Ratings](https://vsmarketplacebadge.apphb.com/rating-short/Captain-Arni.duden-spell-grammar-check.svg)](https://github.com/CaptainArni/vscode-duden-spell-grammar-check)
 
 ## Features
 
