@@ -2,8 +2,12 @@
 	"name": "duden-spell-grammar-check",
 	"displayName": "Duden Spell&Grammar Check",
 	"description": "Extension to check for spelling and grammar mistakes (german language)",
-	"version": "0.0.3",
-	"icon": "assets/duden.png",
+	"version": "0.0.4",
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/CaptainArni/vscode-duden-spell-grammar-check"
+	},
+	"icon": "https://raw.githubusercontent.com/CaptainArni/vscode-duden-spell-grammar-check/main/assets/duden.png",
 	"engines": {
 		"vscode": "^1.52.0"
 	},
@@ -52,5 +56,5 @@
 	"dependencies": {
 		"node-fetch": "^2.6.1"
 	},
-	"publisher":"Captain-Arni"
+	"publisher": "Captain-Arni"
 }
