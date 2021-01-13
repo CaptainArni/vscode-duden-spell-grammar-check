@@ -25,20 +25,7 @@ function activate(context) {
 
 		if (editor) {
 			const document = editor.document;
-			// const selection = editor.selection;
-
 			const selections = editor.selections;
-
-			// Get the text within the selection
-			// let text = document.getText(selection);
-
-			// replace line endings => convert to single line
-			// if(!selection.isSingleLine){
-			// 	text = text.replace(/(\r\n|\n|\r)/gm, " ");
-			// 	editor.edit(editBuilder => {
-			// 		editBuilder.replace(selection, text);
-			// 	});
-			// }
 
 			duden.reset();
 
@@ -49,6 +36,8 @@ function activate(context) {
 					console.log(spellAdvices);
 
 					duden.highlightErrors(text, spellAdvices, selection);
+				}).catch(function (message) {
+					vscode.window.showWarningMessage(message);
 				});
 			});
 		}

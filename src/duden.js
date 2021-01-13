@@ -11,6 +11,11 @@ async function spellCheck(text) {
         let body = { text: text };
         console.log(text);
 
+        // free duden only allows max of 800 characters
+        if(text.length > 800){
+            reject("Character limit (800) reached. Selected: " + text.length);
+        }
+
         fetch(api, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
@@ -49,12 +54,9 @@ function highlightErrors(text, spellAdvices, selection) {
 
     spellAdvices.forEach(spellAdvice => {
         // get spelladvice values
-        let errorMessage = spellAdvice.errorMessage;
         let shortMessage = spellAdvice.shortMessage;
         let length = spellAdvice.length;
         let offset = spellAdvice.offset;
-        let originalError = spellAdvice.originalError;
-        let proposals = spellAdvice.proposals;
 
         // calculate offset for line and character
         let lineOffset = 0;
