@@ -3,13 +3,13 @@
 	"displayName": "Duden Spell&Grammar Check",
 	"description": "Extension to check for spelling and grammar mistakes (german language)",
 	"keywords": [
-        "duden",
-        "spell",
-        "spelling",
-        "grammar",
-        "german"
-    ],
-	"version": "1.0.2",
+		"duden",
+		"spell",
+		"spelling",
+		"grammar",
+		"german"
+	],
+	"version": "1.0.3",
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/CaptainArni/vscode-duden-spell-grammar-check"
