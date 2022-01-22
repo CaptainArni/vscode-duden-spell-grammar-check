@@ -97,9 +97,12 @@ function showDiagnostics(document, range, spellAdvice) {
         infos.push(new vscode.DiagnosticRelatedInformation(new vscode.Location(document.uri, range), "Fix: " + proposal));
     });
 
+    // filter HTML tags
+    let errorMessage = spellAdvice.errorMessage.replace(/<[^>]*>?/gm, '');
+
     collection.set(document.uri, [{
         code: spellAdvice.type,
-        message: spellAdvice.errorMessage,
+        message: errorMessage,
         range: range,
         severity: vscode.DiagnosticSeverity.Warning,
         source: 'Duden',
