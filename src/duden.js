@@ -131,7 +131,7 @@ function autoSpellCheck(dudenOut) {
     const document = activeEditor.document;
     const cursor = activeEditor.selection.active;
 
-    let { text, startPositionOfBefore } = getPositionBeforeAfter(document, cursor, before, after);
+    let { text, startPositionOfBefore, endPositionOfAfter } = getPositionBeforeAfter(document, cursor, before, after);
     if (text === null || text === undefined) {
         dudenOut.appendLine('Got no text.');
         return;
@@ -139,9 +139,11 @@ function autoSpellCheck(dudenOut) {
     // note: this allows for errors on the start and end as we clip words, therefore i search for the first and last delimiter and use them
     // as an additional clip:
     // if the index is negative, the delimiter is not found
+    const documentLength = lengthOfDocument(document);
     const {delimMin, delimMax} = getMinAndMaxDelimInText(delimiters, text);
-    const firstDelim = Math.max(0, delimMin);
-    const lastDelim = Math.max(0, delimMax);
+    // we do not use the delims, if we include start and or end of the document
+    const firstDelim = document.offsetAt(startPositionOfBefore) == 0 ? 0 : Math.max(0, delimMin);
+    const lastDelim = document.offsetAt(endPositionOfAfter) === documentLength ? documentLength : Math.max(0, delimMax);
     // we do not adapt the end position as it is no longer needed
     startPositionOfBefore = shiftPositionInDocument(document, startPositionOfBefore, firstDelim);
     text = text.slice(firstDelim, lastDelim);
@@ -172,13 +174,18 @@ function getMinAndMaxDelimInText(delimiters, text) {
 }
 
 function getPositionBeforeAfter(document, cursor, before, after) {
+    // TODO: allow positions to adapt and shift if, e.g. we are at the start of the document
     const startPositionOfBefore = shiftPositionInDocument(document, cursor, -before);
     const endPositionOfAfter = shiftPositionInDocument(document, cursor, after);
 
     const beforeText = document.getText(new vscode.Range(startPositionOfBefore, cursor));
     const afterText = document.getText(new vscode.Range(cursor, endPositionOfAfter));
     const text = beforeText + afterText;
-    return { text, startPositionOfBefore, afterEndPosition: endPositionOfAfter };
+    return { text, startPositionOfBefore, endPositionOfAfter };
+}
+
+function lengthOfDocument(document) {
+    return document.offsetAt(new vscode.Position(document.lineCount, 0));
 }
 
 function shiftPositionInDocument(document, position, shift) {
