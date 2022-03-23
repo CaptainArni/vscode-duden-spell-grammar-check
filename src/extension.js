@@ -48,8 +48,9 @@ function activate(context) {
 
 	context.subscriptions.push(disposable);
 
+	const dudenOut = vscode.window.createOutputChannel("Duden Spell & Grammar Check");
+
 	const autoSpellCheck = function () {
-		const dudenOut = vscode.window.createOutputChannel("Duden Spell & Grammar Check");
 		const configuration = vscode.workspace.getConfiguration('duden-spell-grammar-check');
 		if(autoCheckInterval === undefined) {
 			const interval = configuration.get('autoCheckSurroundingLines.interval')
