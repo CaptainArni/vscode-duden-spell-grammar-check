@@ -26,4 +26,4 @@ This extension contributes the following commands to the Command palette.
 
 ### 1.0.4
 
-- Allows to configure an interval-based checking of sentences around the current cursor position.
+- Allows to configure an interval-based checking of sentences around the current cursor position. Thanks to https://github.com/EagleoutIce
