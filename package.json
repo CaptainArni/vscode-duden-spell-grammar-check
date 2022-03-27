@@ -22,7 +22,8 @@
 		"Other"
 	],
 	"activationEvents": [
-		"onCommand:duden-spell-grammar-check.checkSpelling"
+		"onCommand:duden-spell-grammar-check.checkSpelling",
+		"onCommand:duden-spell-grammar-check.checkSpellingAroundCursor"
 	],
 	"main": "./src/extension.js",
 	"contributes": {
@@ -30,6 +31,10 @@
 			{
 				"command": "duden-spell-grammar-check.checkSpelling",
 				"title": "Duden Spell&Grammar Check"
+			},
+			{
+				"command": "duden-spell-grammar-check.checkSpellingAroundCursor",
+				"title": "Toggle automatic Duden spelling check around cursor."
 			}
 		],
 		"colors": [
@@ -42,7 +47,47 @@
 					"highContrast": "#FF000055"
 				}
 			}
-		]
+		],
+		"configuration": {
+			"type": "object",
+			"title": "Duden Spell & Grammar Check",
+				"properties": {
+					"duden-spell-grammar-check.autoCheckSurroundingLines.before": {
+						"type": "integer",
+						"title": "Automatically Check #-Characters Before",
+						"description": "Describes the number of characters to be checked before the cursor-position. The characters of before and after are not to exceed 800 with the free version.",
+						"default": 200,
+						"exclusiveMinimum": -1,
+						"exclusiveMaximum": 801
+					},
+					"duden-spell-grammar-check.autoCheckSurroundingLines.after": {
+						"type": "integer",
+						"title": "Automatically Check #-Characters After",
+						"description": "Describes the number of characters to be checked after the cursor-position. The characters of before and after are not to exceed 800 with the free version.",
+						"default": 600,
+						"exclusiveMinimum": -1,
+						"exclusiveMaximum": 801
+					},
+					"duden-spell-grammar-check.autoCheckSurroundingLines.interval": {
+						"type": "integer",
+						"title": "Automatically Check Interval",
+						"description": "Automatically check every #-milliseconds when active. Should be at least one second",
+						"default": 30000,
+						"exclusiveMinimum": 1000
+					},
+					"duden-spell-grammar-check.autoCheckSurroundingLines.delimiters": {
+						"type": "array",
+						"title": "Sentence Delimiter",
+						"description": "In order to automatically check surrounding text without producing wrong answers at the start and end of the selection, the set of delimiters will be used to determine starting and ending positions of a sentence. The algorithm will check all delimiters and choose the widest selection possible.",
+						"default": [
+							"! ", "!\n", "!\r\n",
+							". ", ".\n", ".\r\n",
+							"; ", ";\n", ";\r\n",
+							"? ", "?\n", "?\r\n"
+						]
+					}
+			}
+		}
 	},
 	"scripts": {
 		"lint": "eslint .",

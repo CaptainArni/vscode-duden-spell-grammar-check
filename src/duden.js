@@ -39,7 +39,8 @@ const errorDecorationType = vscode.window.createTextEditorDecorationType({
     backgroundColor: { id: 'duden.error' }
 });
 
-function highlightErrors(text, spellAdvices, selection) {
+// document can override to allow for async checking
+function highlightErrors(text, spellAdvices, selection, activeEditor = undefined) {
     if (spellAdvices == null || spellAdvices.length <= 0) {
         vscode.window.showInformationMessage("No errors");
     }
@@ -50,7 +51,7 @@ function highlightErrors(text, spellAdvices, selection) {
         if (text[i] === "\n") indices.push(i);
     }
 
-    let activeEditor = vscode.window.activeTextEditor;
+    activeEditor = activeEditor || vscode.window.activeTextEditor;
 
     spellAdvices.forEach(spellAdvice => {
         // get spelladvice values
@@ -81,8 +82,7 @@ function highlightErrors(text, spellAdvices, selection) {
         activeEditor.setDecorations(errorDecorationType, errors);
 
         // display diagnostics with fixes
-        let document = vscode.window.activeTextEditor.document;
-        showDiagnostics(document, new vscode.Range(startPos, endPos), spellAdvice);
+        showDiagnostics(activeEditor.document, new vscode.Range(startPos, endPos), spellAdvice);
     });
 
 }
@@ -120,9 +120,83 @@ function reset() {
     vscode.window.activeTextEditor.setDecorations(errorDecorationType, errors);
 }
 
+
+function autoSpellCheck(dudenOut) {
+    const configuration = vscode.workspace.getConfiguration('duden-spell-grammar-check');
+    const before = configuration.get("autoCheckSurroundingLines.before");
+    const after = configuration.get("autoCheckSurroundingLines.after");
+    const delimiters = configuration.get("autoCheckSurroundingLines.delimiters");
+    dudenOut.appendLine(`Checking source code surrounding current cursor {${before}; ${after}; with delimiters: ${JSON.stringify(delimiters)}}`);
+    const activeEditor = vscode.window.activeTextEditor;
+    const document = activeEditor.document;
+    const cursor = activeEditor.selection.active;
+
+    let { text, startPositionOfBefore, endPositionOfAfter } = getPositionBeforeAfter(document, cursor, before, after);
+    if (text === null || text === undefined) {
+        dudenOut.appendLine('Got no text.');
+        return;
+    }
+    // note: this allows for errors on the start and end as we clip words, therefore i search for the first and last delimiter and use them
+    // as an additional clip:
+    // if the index is negative, the delimiter is not found
+    const documentLength = lengthOfDocument(document);
+    const {delimMin, delimMax} = getMinAndMaxDelimInText(delimiters, text);
+    // we do not use the delims, if we include start and or end of the document
+    const firstDelim = document.offsetAt(startPositionOfBefore) == 0 ? 0 : Math.max(0, delimMin);
+    const lastDelim = document.offsetAt(endPositionOfAfter) === documentLength ? documentLength : Math.max(0, delimMax);
+    // we do not adapt the end position as it is no longer needed
+    startPositionOfBefore = shiftPositionInDocument(document, startPositionOfBefore, firstDelim);
+    text = text.slice(firstDelim, lastDelim);
+
+    reset();
+    spellCheck(text).then(spellAdvices => {
+        // we do only need the starting position
+        highlightErrors(text, spellAdvices, new vscode.Selection(startPositionOfBefore, startPositionOfBefore), activeEditor);
+    }).catch(function (message) {
+        vscode.window.showWarningMessage(message);
+    });
+}
+
+function getMinAndMaxDelimInText(delimiters, text) {
+    // TODO: make it more efficient by only search once
+    const starts = delimiters.map(d => {
+        const index = text.indexOf(d);
+        return index < 0 ? undefined : index + d.length
+    }).filter(idx => idx !== undefined);
+    const ends = delimiters.map(d => {
+        const index = text.lastIndexOf(d);
+        return index < 0 ? undefined : index + d.length
+    }).filter(idx => idx !== undefined);
+    return {
+        delimMin: Math.min(...starts),
+        delimMax: Math.max(...ends)
+    };
+}
+
+function getPositionBeforeAfter(document, cursor, before, after) {
+    // TODO: allow positions to adapt and shift if, e.g. we are at the start of the document
+    const startPositionOfBefore = shiftPositionInDocument(document, cursor, -before);
+    const endPositionOfAfter = shiftPositionInDocument(document, cursor, after);
+
+    const beforeText = document.getText(new vscode.Range(startPositionOfBefore, cursor));
+    const afterText = document.getText(new vscode.Range(cursor, endPositionOfAfter));
+    const text = beforeText + afterText;
+    return { text, startPositionOfBefore, endPositionOfAfter };
+}
+
+function lengthOfDocument(document) {
+    return document.offsetAt(new vscode.Position(document.lineCount, 0));
+}
+
+function shiftPositionInDocument(document, position, shift) {
+    return document.positionAt(document.offsetAt(position) + shift);
+}
+
+
 module.exports = {
     reset,
     spellCheck,
     highlightErrors,
-    showDiagnostics
+    showDiagnostics,
+    autoSpellCheck
 };
